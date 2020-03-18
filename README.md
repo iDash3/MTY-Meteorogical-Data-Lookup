@@ -1,5 +1,15 @@
 # Meteorogical Data lookup for Monterrey, NL
 
+## Requirements
+
+### pandas
+
+`pip install pandas`
+
+### xlsxwriter
+
+`pip install xlsxwriter`
+
 ## Tool
 
 ### Current dataframe structure
