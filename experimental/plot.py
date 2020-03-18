@@ -1,6 +1,6 @@
 import pandas as pd
 import xlsxwriter
-
+import matplotlib.pyplot as plt
 
 #
 # MTY Meteorological Data
@@ -15,7 +15,10 @@ def foo(energy):
     years = ['2005', '2006', '2007', '2008', '2009', '2010', '2011', '2012']
     big_df = pd.DataFrame()
     for i in range(len(years)):
-        df = pd.read_csv('./src/RSF_Monterrey_{}.csv'.format(years[i]))
+        df = pd.read_csv('../src/RSF_Monterrey_{}.csv'.format(years[i]))
+
+        plot(df, 'Temperature')
+
         big_df = pd.concat([big_df, df])
 
     # EOLIC ENERGY
@@ -154,9 +157,19 @@ def pretty(df, name):
     writer.save()
 
 
+def plot(df, f):
+    # df[[f, t]].plot()
+    df[[f]].plot()
+    plt.show()
+
+
 if __name__ == '__main__':
     # 1 for eolic, 2 for solar
-    final = foo(2)
-    # print(final)
+    final = foo(1)
+
+    # Plot
+    # plot(final)
+
+    # Excel
     # final.to_csv('./final/final.csv', index=False)
-    pretty(final, 'lab_solar')
+    # pretty(final, 'lab_solar')

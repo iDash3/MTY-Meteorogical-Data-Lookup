@@ -1,18 +1,27 @@
 # Meteorogical Data lookup for Monterrey, NL
 
+Data analysis for metorogical sets
+Current sets: MTY, NL
+
 ## Requirements
 
 ### pandas
 
 `pip install pandas`
 
+### numpy
+
+`pip install numpy`
+
 ### xlsxwriter
 
 `pip install xlsxwriter`
 
-## Tool
+## Structure
 
-### Current dataframe structure
+### Current dataframe support
+
+For Eolic Energy
 
 ```
   final_df = pd.DataFrame({
@@ -25,5 +34,20 @@
     'Temperature Average': [],
     'Pressure Average': [],
     'Humidity Average': [],
+    'Density Average': [],
+  })
+```
+
+For Solar Energy
+
+```
+  final_df = pd.DataFrame({
+    'Year': [],
+    'Month': [],
+    'Hour': [],
+    'Minute': [],
+    'Wind Speed Average': [],
+    'Wind Direction Average': [],
+    'Temperature Average': [],
   })
 ```
