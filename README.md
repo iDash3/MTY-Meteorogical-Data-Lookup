@@ -41,13 +41,15 @@ For Eolic Energy
 For Solar Energy
 
 ```
-  final_df = pd.DataFrame({
-    'Year': [],
-    'Month': [],
-    'Hour': [],
-    'Minute': [],
-    'Wind Speed Average': [],
-    'Wind Direction Average': [],
-    'Temperature Average': [],
+   final_df = pd.DataFrame({
+      'Month': [],
+      'Hour': [],
+      'Minute': [],
+      'Clearsky GHI Average': [],
+      'Clearsky DNI + DHI Average': [],
+      'Clearsky DNI Average': [],
+      'Clearsky DHI Average': [],
+      'Solar Height Angle': [],
+      'Azimut Angle': [],
   })
 ```

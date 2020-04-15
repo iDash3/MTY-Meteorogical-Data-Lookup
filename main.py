@@ -9,6 +9,7 @@ import numpy
 #
 
 
+
 def foo(energy):
 
     # Big DF (combined data from every single year)
@@ -96,21 +97,51 @@ def foo(energy):
 
     # SOLAR ENERGY
     if energy == 2:
+        # GDI = DNI + DHI (global rayo directo)
+        # GHI (global horizontal)
+        # DNI (directa rayo directo)
+        # DHI (difusa)
+        # GHI / DNI+DHI / DNI / DHI mas tabla de ANGULO ALTURA SOLAR Y ANGULO ACIMUT SOLAR que deben calcular con ECUACIONES DE GEOMETRIA SOLAR
+        # Year,Month,Day,Hour,Minute,
+        # Clearsky DHI,
+        # Clearsky DNI,
+        # Clearsky GHI,
+        # Cloud Type,
+        # Dew Point,
+        # DHI,
+        # DNI,
+        # GHI,
+        # Solar Zenith Angle,
+        # Temperature,Pressure,Relative Humidity,Precipitable Water,Wind Direction,Wind Speed
+
+        lat = 25.6
+
         # Final DataFrame Structure
-        main_columns = ['Month', 'Hour', 'Minute',
-                        'Clearsky DHI Average', 'Clearsky DNI Average', 'Clearsky GHI Average', ]
+        main_columns = ['Month',
+                        'Hour',
+                        'Minute',
+                        'Clearsky GDI Average',
+                        'Clearsky GHI Average',
+                        'Clearsky DNI Average',
+                        'Clearsky DHI Average',
+                        'Solar Height Angle',
+                        'Azimut Angle']
+
         final_df = pd.DataFrame({
             'Month': [],
             'Hour': [],
             'Minute': [],
-            'Clearsky DHI Average': [],
-            'Clearsky DNI Average': [],
+            'Clearsky GDI Average': [],
             'Clearsky GHI Average': [],
+            'Clearsky DNI Average': [],
+            'Clearsky DHI Average': [],
+            'Solar Height Angle': [],
+            'Azimut Angle': [],
         })
 
         # All the data resides in big_df, filter parameters
         useful_df = big_df[['Year', 'Month', 'Day', 'Hour', 'Minute',
-                            'Clearsky DHI', 'Clearsky DNI', 'Clearsky GHI', ]]
+                            'Clearsky GHI', 'Clearsky DNI', 'Clearsky DHI', ]]
 
         # Iterate over useful data
         for j in range(12):
@@ -123,31 +154,40 @@ def foo(energy):
                 full_hour_df = hour_zero[hour_zero['Minute'] == 0]
                 half_hour_df = hour_zero[hour_zero['Minute'] == 30]
 
+                half_hour_GDI = half_hour_df['Clearsky DNI'].mean(
+                ) + half_hour_df['Clearsky DHI'].mean()
+                full_hour_GDI = full_hour_df['Clearsky DNI'].mean(
+                ) + full_hour_df['Clearsky DHI'].mean()
+
                 data_full_h = {
                     'Month': [j+1],
                     'Hour': [k],
                     'Minute': [0],
-                    'Clearsky DHI Average': [full_hour_df['Clearsky DHI'].mean()],
-                    'Clearsky DNI Average': [full_hour_df['Clearsky DNI'].mean()],
+                    'Clearsky GDI Average': [full_hour_GDI],
                     'Clearsky GHI Average': [full_hour_df['Clearsky GHI'].mean()],
+                    'Clearsky DNI Average': [full_hour_df['Clearsky DNI'].mean()],
+                    'Clearsky DHI Average': [full_hour_df['Clearsky DHI'].mean()],
+                    'Solar Height Angle': [0],
+                    'Azimut Angle': [0],
                 }
                 data_half_h = {
                     'Month': [j+1],
                     'Hour': [k],
                     'Minute': [30],
-                    'Clearsky DHI Average': [half_hour_df['Clearsky DHI'].mean()],
-                    'Clearsky DNI Average': [half_hour_df['Clearsky DNI'].mean()],
+                    'Clearsky GDI Average': [half_hour_GDI],
                     'Clearsky GHI Average': [half_hour_df['Clearsky GHI'].mean()],
+                    'Clearsky DNI Average': [half_hour_df['Clearsky DNI'].mean()],
+                    'Clearsky DHI Average': [half_hour_df['Clearsky DHI'].mean()],
+                    'Solar Height Angle': [0],
+                    'Azimut Angle': [0],
                 }
 
-                new_row = pd.DataFrame(
-                    data_full_h, columns=main_columns)
-                new_row_ = pd.DataFrame(
-                    data_half_h, columns=main_columns)
+                new_row = pd.DataFrame(data_full_h, columns=main_columns)
+                new_row_ = pd.DataFrame(data_half_h, columns=main_columns)
+
                 both_rows = pd.concat([new_row, new_row_])
 
                 final_df = pd.concat([final_df, both_rows])
-                # new_row.reset_index(drop=True, inplace=True)
 
                 print('{}m, {}h, added'.format(j+1, k))
 
@@ -156,18 +196,48 @@ def foo(energy):
 
 
 # Function to prettify output
-def pretty(df, name):
+# Probably the worst thing ive ever done
+def pretty(df, name, multiple=None):
+    # for i in range(12):
+    #     pretty_df = df[df['Month'] == i+1]
+    #     pretty_df.to_excel(writer, sheet_name='Sheet_{}'.format(i+1))
+    # writer.save()
+
+    # if multiple is not None:
+    #     for m in multiple:
+    #         df[m]
+
+    columns = ['Month', 'Hour', 'Minute', 'Wind Speed Average', 'Wind Direction Average',
+               'Temperature Average', 'Pressure Average', 'Humidity Average', 'Density Average']
+    columns = ['Month',
+               'Hour',
+               'Minute',
+               'Clearsky GDI Average',
+               'Clearsky GHI Average',
+               'Clearsky DNI Average',
+               'Clearsky DHI Average',
+               'Solar Height Angle',
+               'Azimut Angle', ]
+
     writer = pd.ExcelWriter(
         './final/{}_pretty.xlsx'.format(name), engine='xlsxwriter')
-    for i in range(12):
-        pretty_df = df[df['Month'] == i+1]
-        pretty_df.to_excel(writer, sheet_name='Sheet_{}'.format(i+1))
+    for c in columns:
+        actual_df = df[['Month', c]]
+        if c == 'Month' or c == 'Hour' or c == 'Minute':
+            pass
+        else:
+            outofnames_df = pd.DataFrame()
+            for i in range(12):
+                pretty_df = actual_df[actual_df['Month'] == i+1]
+                outofnames_df = pd.concat(
+                    [outofnames_df, pretty_df], axis=1, sort=False)
+            outofnames_df.to_excel(writer, sheet_name='pee_{}'.format(c))
+    print("Saved as: {} ".format(name))
     writer.save()
 
 
 if __name__ == '__main__':
     # 1 for eolic, 2 for solar
-    final = foo(1)
-    print(final)
+    final = foo(2)
     # final.to_csv('./final/final.csv', index=False)
-    pretty(final, 'lab_eolico')
+    pretty(final, 'lab_solar')

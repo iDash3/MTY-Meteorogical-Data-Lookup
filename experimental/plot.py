@@ -17,8 +17,6 @@ def foo(energy):
     for i in range(len(years)):
         df = pd.read_csv('../src/RSF_Monterrey_{}.csv'.format(years[i]))
 
-        plot(df, 'Temperature')
-
         big_df = pd.concat([big_df, df])
 
     # EOLIC ENERGY
@@ -157,17 +155,20 @@ def pretty(df, name):
     writer.save()
 
 
-def plot(df, f):
+def plot_name(df, f):
+    pass
     # df[[f, t]].plot()
-    df[[f]].plot()
-    plt.show()
+    # df[[f]].plot()
+    # plt.show()
 
 
 if __name__ == '__main__':
     # 1 for eolic, 2 for solar
     final = foo(1)
-
+    final[['Wind Speed Average']].plot()
+    # final[['Hour', 'Wind Speed Average']].plot()
     # Plot
+    plt.show()
     # plot(final)
 
     # Excel
